@@ -1,8 +1,11 @@
 #!/usr/bin/python
 
 """
-(c) 2015 Finn Ellis, licensed under MIT (see LICENSE).
-Based on the pseudocode at https://github.com/BartMassey/ciphersaber2
+Copyright (c) 2015 Finn Ellis, licensed under the MIT License.
+(See accompanying LICENSE file for details.)
+
+The functions in this file are based on Bart Massey's pseudocode:
+https://github.com/BartMassey/ciphersaber2
 """
 
 import random
