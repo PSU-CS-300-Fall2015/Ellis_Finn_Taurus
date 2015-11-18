@@ -5,6 +5,11 @@
 Based on the pseudocode at https://github.com/BartMassey/ciphersaber2
 """
 
+import random
+import time
+
+urandom = random.SystemRandom(time.clock())
+
 
 def keystream(stream_length, rounds, key):
     S = range(256)
@@ -32,6 +37,23 @@ def keystream(stream_length, rounds, key):
     return stream
 
 
+def random_iv(length = 10):
+    iv = ""
+    for i in range(length):
+        iv += (chr(urandom.randrange(256)))
+    return iv
+
+
+def encrypt(message, rounds, key, iv = None):
+    if iv == None:
+        iv = random_iv()
+    stream = keystream(len(message), rounds, key+iv)
+    ciphertext = iv
+    for i in range(len(message)):
+        ciphertext += (chr(ord(message[i]) ^ stream[i]))
+    return ciphertext
+
+
 if __name__ == "__main__":
     print("Testing stream generation.")
     print("Generating a 10-byte stream, 200 rounds, key 'testkey'")
@@ -43,3 +65,14 @@ if __name__ == "__main__":
     print("Different input, different output.")
     assert len(keystream(42, 200, "testkey")) == 42
     print("Requested 42 bytes of stream, got 42 bytes of stream.")
+
+    print("Testing encryption.")
+    print("Encrypting 'fish', 200 rounds, key 'testkey', IV 'badiv'")
+    cipher = encrypt("fish", 200, "testkey", "badiv")
+    assert cipher == encrypt("fish", 200, "testkey", "badiv")
+    print("Same input, same output.")
+    assert cipher != encrypt("fish", 200, "testkey")
+    print("Random IV, different output.")
+    iv = random_iv()
+    assert encrypt("fish", 200, "testkey", iv).startswith(iv)
+    print("Ciphertext starts with IV.")
