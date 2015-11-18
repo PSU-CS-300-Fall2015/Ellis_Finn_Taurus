@@ -99,7 +99,7 @@ def decrypt(ciphertext, key, rounds = None, iv_length = None):
     return plaintext
 
 
-if __name__ == "__main__":
+def run_tests():
     """
     A few simple tests for the encryption functions.
     """
@@ -140,3 +140,7 @@ if __name__ == "__main__":
     print("Encrypt/decrypt match.")
     assert "fish" == decrypt(cipher, "testkey", ROUNDS, IV_LENGTH)
     print("Constants match.")
+
+
+if __name__ == "__main__":
+    run_tests()
