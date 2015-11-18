@@ -142,5 +142,19 @@ def run_tests():
     print("Constants match.")
 
 
+def interact(args):
+    """
+    Respond to an interactive (command-line) activation.
+    """
+    if args.test:
+        run_tests()
+        return
+    print("No arguments specified. Try --help.")
+
+
 if __name__ == "__main__":
-    run_tests()
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Test and run CS2 encryption/decryption functions.")
+    parser.add_argument("-t", "--test", action="store_true", help="Run tests and exit.")
+    interact(parser.parse_args())
