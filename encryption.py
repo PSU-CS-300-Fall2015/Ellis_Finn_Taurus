@@ -149,12 +149,26 @@ def interact(args):
     if args.test:
         run_tests()
         return
-    print("No arguments specified. Try --help.")
+
+    if not args.key:
+        print("No key specified. Please add --key, or use --help or --test.")
+        return
+
+    if args.d:
+        print(decrypt(sys.stdin.read(), args.key, args.r, args.l))
+        return
+
+    print(encrypt(sys.stdin.read(), args.key, args.r, args.l))
 
 
 if __name__ == "__main__":
     import argparse
+    import sys
 
-    parser = argparse.ArgumentParser(description="Test and run CS2 encryption/decryption functions.")
+    parser = argparse.ArgumentParser(description="Test and run CS2 encryption/decryption functions. By default, will encrypt stdin using the given key and recommended defaults for the other parameters ({} rounds of key scheduling and a {}-byte IV).".format(ROUNDS, IV_LENGTH))
     parser.add_argument("-t", "--test", action="store_true", help="Run tests and exit.")
+    parser.add_argument("-k", "--key", help="Specify a key for encryption/decription.")
+    parser.add_argument("-d", action="store_true", help="Decrypt stdin instead of encrypting.")
+    parser.add_argument("-r", type=int, default=None, help="Specify a number of rounds of key scheduling.")
+    parser.add_argument("-l", type=int, default=None, help="Specify an expected IV length.")
     interact(parser.parse_args())
