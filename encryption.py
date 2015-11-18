@@ -17,6 +17,10 @@ IV_LENGTH = 10
 
 
 def keystream(stream_length, rounds, key):
+    """
+    Generate an RC4 keystream of the given length, doing a specified number
+    of rounds of key scheduling and encrypting with the key provided.
+    """
     S = range(256)
 
     # Do key scheduling.
@@ -43,6 +47,9 @@ def keystream(stream_length, rounds, key):
 
 
 def random_iv(length = None):
+    """
+    Randomly create an initial value of the length provided, or the default.
+    """
     if length == None:
         length = IV_LENGTH
     iv = ""
@@ -52,6 +59,10 @@ def random_iv(length = None):
 
 
 def encrypt(message, rounds, key, iv = None):
+    """
+    Encrypt a message with the given key, doing the specified number of rounds
+    of key scheduling. Creates a random IV if none was provided.
+    """
     if iv == None:
         iv = random_iv()
     stream = keystream(len(message), rounds, key+iv)
@@ -62,6 +73,10 @@ def encrypt(message, rounds, key, iv = None):
 
 
 def decrypt(ciphertext, rounds, key, iv_length = None):
+    """
+    Decrypt a message with the given key, doing the specified number of rounds
+    of key scheduling. If no IV length is provided, assumes the default.
+    """
     if iv_length == None:
         iv_length = IV_LENGTH
     iv = ciphertext[:iv_length]
@@ -74,6 +89,10 @@ def decrypt(ciphertext, rounds, key, iv_length = None):
 
 
 if __name__ == "__main__":
+    """
+    A few simple tests for the encryption functions.
+    """
+
     print("-- Testing stream generation. --")
     print("Generating a 10-byte stream, 200 rounds, key 'testkey'")
     stream = keystream(10, 200, "testkey")
