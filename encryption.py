@@ -133,3 +133,10 @@ if __name__ == "__main__":
     print("Got 'fish' back from stream with random IV.")
     assert "fish" != decrypt(random_cipher, "badkey", 200)
     print("Didn't get 'fish' back when using the wrong key.")
+
+    print("-- Testing defaults. --")
+    cipher = encrypt("fish", "testkey")
+    assert "fish" == decrypt(cipher, "testkey")
+    print("Encrypt/decrypt match.")
+    assert "fish" == decrypt(cipher, "testkey", ROUNDS, IV_LENGTH)
+    print("Constants match.")
