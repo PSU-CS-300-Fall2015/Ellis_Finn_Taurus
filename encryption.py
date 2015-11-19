@@ -42,6 +42,7 @@ def keystream(stream_length, key, rounds = None):
 
     # Produce the actual stream.
     stream = []
+    j = 0
     for i in range(stream_length):
         k = (i + 1) % 256
         j = (j + S[k]) % 256
