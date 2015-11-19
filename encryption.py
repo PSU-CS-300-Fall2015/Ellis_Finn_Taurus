@@ -66,15 +66,17 @@ def random_iv(length = None):
     return iv
 
 
-def encrypt(message, key, rounds = None, iv = None):
+def encrypt(message, key, rounds = None, iv = None, iv_length = None):
     """
     Encrypt a message with the given key, doing the specified number of rounds
     of key scheduling. Creates a random IV if none was provided.
     """
     if rounds == None:
         rounds = ROUNDS
+    if iv_length == None:
+        iv_length = IV_LENGTH
     if iv == None:
-        iv = random_iv()
+        iv = random_iv(iv_length)
     stream = keystream(len(message), key+iv, rounds)
     ciphertext = ""
     for i in range(len(message)):
