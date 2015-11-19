@@ -105,6 +105,8 @@ def decrypt(ciphertext, key, rounds = None, iv_length = None):
 def run_tests():
     """
     A few simple tests for the encryption functions.
+    Note that these are primarily for internal consistency and
+    code errors, not errors in the RC4 algorithm.
     """
 
     print("-- Testing stream generation. --")
@@ -143,6 +145,10 @@ def run_tests():
     print("Encrypt/decrypt match.")
     assert "fish" == decrypt(cipher, "testkey", ROUNDS, IV_LENGTH)
     print("Constants match.")
+
+    print("-- Testing algorithm. --")
+    assert "Al Dakota buys" == encrypt("mead", "Al", 20, "Al Dakota ")
+    print("Human-readable sample works.")
 
 
 def interact(args):
