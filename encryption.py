@@ -163,7 +163,7 @@ def interact(args):
 
     # Using sys.stdout.write directly because we don't want python doing
     # anything fancy with the print; extra bytes really matter!
-    sys.stdout.write(encrypt(sys.stdin.read(), args.key, args.r, args.l))
+    sys.stdout.write(encrypt(sys.stdin.read(), args.key, args.r, args.iv, args.l))
 
 
 if __name__ == "__main__":
@@ -175,10 +175,11 @@ if __name__ == "__main__":
     import argparse
     import sys
 
-    parser = argparse.ArgumentParser(description="Test and run CS2 encryption/decryption functions. By default, will encrypt stdin using the given key and recommended defaults for the other parameters ({} rounds of key scheduling and a {}-byte IV).".format(ROUNDS, IV_LENGTH))
+    parser = argparse.ArgumentParser(description="Test and run CS2 encryption/decryption functions. By default, will encrypt stdin using the given key and recommended defaults for the other parameters ({} rounds of key scheduling and a randomly-generated {}-byte IV).".format(ROUNDS, IV_LENGTH))
     parser.add_argument("-t", "--test", action="store_true", help="Run tests and exit.")
     parser.add_argument("-k", "--key", help="Specify a key for encryption/decription.")
+    parser.add_argument("-i", "--iv", default=None, help="Specify an IV instead of generating one.")
     parser.add_argument("-d", action="store_true", help="Decrypt stdin instead of encrypting.")
     parser.add_argument("-r", type=int, default=None, help="Specify a number of rounds of key scheduling.")
-    parser.add_argument("-l", type=int, default=None, help="Specify an expected IV length.")
+    parser.add_argument("-l", type=int, default=None, help="Specify an expected IV length. (Ignored if IV is given.)")
     interact(parser.parse_args())
