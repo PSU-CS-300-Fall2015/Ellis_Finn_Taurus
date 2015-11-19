@@ -155,13 +155,20 @@ def interact(args):
         return
 
     if args.d:
-        print(decrypt(sys.stdin.read(), args.key, args.r, args.l))
+        sys.stdout.write(decrypt(sys.stdin.read(), args.key, args.r, args.l))
         return
 
-    print(encrypt(sys.stdin.read(), args.key, args.r, args.l))
+    # Using sys.stdout.write directly because we don't want python doing
+    # anything fancy with the print; extra bytes really matter!
+    sys.stdout.write(encrypt(sys.stdin.read(), args.key, args.r, args.l))
 
 
 if __name__ == "__main__":
+    """
+    Interactive mode. This has its own imports because we don't need to drag
+    these modules in for the normal library functionality.
+    """
+
     import argparse
     import sys
 
