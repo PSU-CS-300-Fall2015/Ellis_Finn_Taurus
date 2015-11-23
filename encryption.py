@@ -18,7 +18,7 @@ urandom = random.SystemRandom(time.clock())
 # These are just defaults, based on the CipherSaber2 specification.
 # They can be overridden in the actual function calls.
 IV_LENGTH = 10
-ROUNDS = 200
+ROUNDS = 20
 
 
 def keystream(stream_length, key, rounds = None):
