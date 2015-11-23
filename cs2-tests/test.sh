@@ -19,7 +19,7 @@ EOF
 while read CIPHER KEY PLAIN R
 do
     echo -n "Testing $CIPHER ... "
-    cat $CIPHER | ../encryption.py -dk $KEY -r $R > $TESTFILE
+    cat $CIPHER | ../ciphersaber2.py -dk $KEY -r $R > $TESTFILE
     cmp --quiet $TESTFILE $PLAIN && echo "OK" || echo "!!"
 done
 unset IFS
