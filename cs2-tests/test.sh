@@ -8,11 +8,13 @@
 
 TESTFILE=`mktemp`
 
+IFS="	" # tab
 cat <<EOF |
-cstest1.cs1 asdfg cstest1.txt 1
-cstest2.cs1 SecretMessageforCongress cstest2.txt 1
-cknight.cs1 ThomasJefferson cknight.gif 1
-cstest.cs2 asdfg cstest.txt 10
+cstest1.cs1	asdfg	cstest1.txt	1
+cstest2.cs1	SecretMessageforCongress	cstest2.txt	1
+cknight.cs1	ThomasJefferson	cknight.gif	1
+cstest.cs2	asdfg	cstest.txt	10
+algorhyme.cs2	CS 300 test	algorhyme.txt	200
 EOF
 while read CIPHER KEY PLAIN R
 do
@@ -20,4 +22,5 @@ do
     cat $CIPHER | ../encryption.py -dk $KEY -r $R > $TESTFILE
     cmp --quiet $TESTFILE $PLAIN && echo "OK" || echo "!!"
 done
+unset IFS
 rm $TESTFILE
