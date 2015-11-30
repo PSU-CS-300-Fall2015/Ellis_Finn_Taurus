@@ -18,13 +18,24 @@ import time
 import taunet
 
 
+# Network connection settings.
 MAX_QUEUE = 10
+
+# Ensure base directory exists.
 TAURUS_DIR = os.path.expanduser("~/.taurus")
+assert os.path.isdir(TAURUS_DIR), "Taurus directory {0} does not exist.".format(TAURUS_DIR)
+
+# Ensure message directory exists.
 MESSAGE_DIR = os.path.join(TAURUS_DIR, "messages")
 assert os.path.isdir(MESSAGE_DIR), "Message directory {0} does not exist.".format(MESSAGE_DIR)
 
-logging.basicConfig(level=logging.DEBUG)
-logger=logging.getLogger(__name__)
+# Set up logger.
+LOG_FILE = os.path.join(TAURUS_DIR, "taurusd.log")
+LOG_FORMAT = "%(asctime)s %(levelname)s: %(message)s"
+LOG_LEVEL = logging.DEBUG
+logging.basicConfig(level=LOG_LEVEL, filename=LOG_FILE, format=LOG_FORMAT)
+logger=logging.getLogger("taurusd")
+
 
 def write_message(tnm):
     """
@@ -36,6 +47,7 @@ def write_message(tnm):
     with open(filename, "w") as f:
         f.write(tnm.cleartext)
     return filename
+
 
 def main_loop():
     try:
@@ -76,6 +88,7 @@ def main_loop():
             logger.info("Closing open socket.")
             conn.shutdown(socket.SHUT_RDWR)
             conn.close()
+
 
 if __name__ == "__main__":
     main_loop()
