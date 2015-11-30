@@ -50,6 +50,7 @@ def write_message(tnm):
 
 
 def main_loop():
+    logger.info("Starting main loop.")
     try:
         listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         assert listener, "Couldn't create listening socket."
