@@ -1,10 +1,13 @@
 #!/usr/bin/python
 
 import socket
+import logging
 
 TAUNET_PORT = 6283
 MAX_QUEUE = 10
 BUF_SIZE = 1024
+
+logging.basicConfig(level=logging.DEBUG)
 
 # Initialize socket variables so we can test for their existence
 # and close them cleanly in the finally block.
@@ -22,22 +25,22 @@ try:
     conn, sender = listener.accept()
     assert conn, "Couldn't make connection socket"
     assert sender, "Made connection, but have no sender o_O"
-    print("Got a connection from", sender)
+    logging.info("Got a connection from {sender}.".format(sender=sender))
     # Don't block; time out after three seconds.
     conn.settimeout(3)
     data = conn.recv(BUF_SIZE)
     if data:
-        print("It says:" , data)
+        logging.info("{sender} wrote: {data}".format(sender=sender, data=data))
     else:
-        print("It timed out.")
+        logging.info("Connection from {sender} timed out.".format(sender=sender))
 
 # Will catch socket.error later; right now we want it to blow us up.
 except KeyboardInterrupt:
-    print("Killed.")
+    logging.info("Killed.")
 finally:
-    print("Closing socket.")
+    logging.info("Closing socket.")
     if listener:
-        listener.shutdown(socket.SHUT_RDWR)
+        # No shutdown because this is just the listener, not a connection.
         listener.close()
     if conn:
         conn.shutdown(socket.SHUT_RDWR)
