@@ -11,6 +11,7 @@ MAX_QUEUE = 10
 BUF_SIZE = 1024
 
 logging.basicConfig(level=logging.DEBUG)
+logger=logging.getLogger(__name__)
 
 # Initialize socket variables so we can test for their existence
 # and close them cleanly in the finally block.
@@ -28,26 +29,26 @@ try:
     conn, sender = listener.accept()
     assert conn, "Couldn't make connection socket"
     assert sender, "Made connection, but have no sender o_O"
-    logging.info("Got a connection from {sender}.".format(sender=sender))
+    logger.info("Got a connection from {sender}.".format(sender=sender))
     # Don't block when connected; time out if we get no data.
     conn.settimeout(3)
     data = conn.recv(BUF_SIZE)
     if data:
         try:
             tnm = taunet.TauNetMessage(data)
-            logging.debug("Got a TauNet message. version: {version}, from: {sender}, to: {recipient}, "
+            logger.debug("Got a TauNet message. version: {version}, from: {sender}, to: {recipient}, "
                           "message: {message}".format(version=tnm.version, sender=tnm.sender,
                                                       recipient=tnm.recipient, message=tnm.message))
         except taunet.TauNetError as e:
-            logging.debug("Got a badly-formed message ('{error}').".format(error=str(e)))
+            logger.debug("Got a badly-formed message ('{error}').".format(error=str(e)))
     else:
-        logging.info("Connection from {sender} timed out.".format(sender=sender))
+        logger.info("Connection from {sender} timed out.".format(sender=sender))
 
 # Will catch socket.error later; right now we want it to blow us up.
 except KeyboardInterrupt:
-    logging.info("Killed.")
+    logger.info("Killed.")
 finally:
-    logging.info("Closing socket.")
+    logger.info("Closing socket.")
     if listener:
         # No shutdown because this is just the listener, not a connection.
         listener.close()
