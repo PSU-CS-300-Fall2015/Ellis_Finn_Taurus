@@ -10,8 +10,10 @@ This file defines constants and classes related to the TauNet protocol.
 import ciphersaber2
 
 
-KEY = "password"
 VERSION = "0.2"
+BUF_SIZE = 1024
+PORT = 6283
+KEY = "password"
 
 
 class TauNetError(Exception):
