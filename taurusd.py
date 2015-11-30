@@ -16,7 +16,7 @@ conn = None
 try:
     listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     assert listener, "Couldn't create listening socket."
-    # Block until we get data.
+    # Block until someone connects to us.
     listener.settimeout(None)
     # Empty host means "all available interfaces."
     listener.bind(('', TAUNET_PORT))
@@ -26,7 +26,7 @@ try:
     assert conn, "Couldn't make connection socket"
     assert sender, "Made connection, but have no sender o_O"
     logging.info("Got a connection from {sender}.".format(sender=sender))
-    # Don't block; time out after three seconds.
+    # Don't block when connected; time out if we get no data.
     conn.settimeout(3)
     data = conn.recv(BUF_SIZE)
     if data:
