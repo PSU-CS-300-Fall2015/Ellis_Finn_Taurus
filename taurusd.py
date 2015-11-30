@@ -3,6 +3,9 @@
 import socket
 import logging
 
+import taunet
+
+
 TAUNET_PORT = 6283
 MAX_QUEUE = 10
 BUF_SIZE = 1024
@@ -30,7 +33,13 @@ try:
     conn.settimeout(3)
     data = conn.recv(BUF_SIZE)
     if data:
-        logging.info("{sender} wrote: {data}".format(sender=sender, data=data))
+        try:
+            tnm = taunet.TauNetMessage(data)
+            logging.debug("Got a TauNet message. version: {version}, from: {sender}, to: {recipient}, "
+                          "message: {message}".format(version=tnm.version, sender=tnm.sender,
+                                                      recipient=tnm.recipient, message=tnm.message))
+        except taunet.TauNetError as e:
+            logging.debug("Got a badly-formed message ('{error}').".format(error=str(e)))
     else:
         logging.info("Connection from {sender} timed out.".format(sender=sender))
 
