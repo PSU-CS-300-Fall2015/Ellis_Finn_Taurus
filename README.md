@@ -14,9 +14,11 @@ Create directories for Taurus to work in:
 mkdir -p ~/.taurus/messages
 ```
 
+Update the variable `KEY` in taunet.py to your actual encryption key.
+
 ### Receiving Messages
 
-Start the daemon with `./taurusd.py`. It will decrypt any received messages and write them into files in `~/.taurus/messages`, named after their senders and timestamps. Information is logged to `~/.taurus/taurusd.log`.
+Start the daemon with `./taurusd.py &`. It will decrypt any received messages and write them into files in `~/.taurus/messages`, named after their senders and timestamps. Any messages which can't be decrypted with the key in `taunet.py` and parsed using the specified version of TauNet are discarded (with the reason logged). No other message filtering or verification is performed. Information, including sender IPs, is logged to `~/.taurus/taurusd.log`.
 
 ### Sending Messages
 
