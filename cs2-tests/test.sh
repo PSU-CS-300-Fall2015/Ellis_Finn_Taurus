@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# Copyright © 2015 Finn Ellis
+# Copyright (c) 2015 Finn Ellis, licensed under the MIT license.
+# (See accompanying LICENSE file for details.)
 
 # Tests CipherSaber2 implementation in the parent directory
 # against some known samples. Cribbed heavily from Bart Massey's CS2 tests:

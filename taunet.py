@@ -1,5 +1,12 @@
 #!/usr/bin/python
 
+"""
+Copyright (c) 2015 Finn Ellis, licensed under the MIT License.
+(See accompanying LICENSE file for details.)
+
+This file defines constants and classes related to the TauNet protocol.
+"""
+
 import ciphersaber2
 
 

@@ -1,5 +1,15 @@
 #!/usr/bin/python
 
+"""
+Copyright (c) 2015 Finn Ellis, licensed under the MIT License.
+(See accompanying LICENSE file for details.)
+
+This is a listening daemon for the TauNet protocol. It waits to receive
+a single connection and attempts to parse any data sent as a well-formatted
+TauNet message. If successful, it logs the message; if not, it logs the
+reason. Either way, it quits immediately afterwards.
+"""
+
 import socket
 import logging
 
