@@ -51,6 +51,7 @@ def write_message(tnm):
 
 def main_loop():
     logger.info("Starting main loop.")
+    conn = None
     try:
         listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         assert listener, "Couldn't create listening socket."
@@ -61,6 +62,9 @@ def main_loop():
         listener.listen(MAX_QUEUE)
 
         while True:
+            # Not redundant. The first initialization of conn is so that it can
+            # be tested in the finally block even if an exception is raised
+            # before now, this one is so it happens in every loop iteration.
             conn = None
             conn, sender = listener.accept()
             assert conn, "Failed to make connection socket"
@@ -68,7 +72,10 @@ def main_loop():
             logger.info("Got a connection from {sender}.".format(sender=sender))
             # Don't block when connected; time out if we get no data.
             conn.settimeout(3)
-            data = conn.recv(taunet.BUF_SIZE)
+            try:
+                data = conn.recv(taunet.BUF_SIZE)
+            except socket.timeout:
+                data = None
             if data:
                 try:
                     tnm = taunet.TauNetMessage(data)
@@ -77,6 +84,8 @@ def main_loop():
                 except taunet.TauNetError as e:
                     logger.info("Got a badly-formed message ('{error}').".format(error=str(e)))
             else:
+                # The error message is here instead of above because the
+                # exception isn't always raised.
                 logger.info("Connection from {sender} timed out.".format(sender=sender))
             conn.shutdown(socket.SHUT_RDWR)
             conn.close()
