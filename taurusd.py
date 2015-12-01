@@ -87,8 +87,6 @@ def main_loop():
                 # The error message is here instead of above because the
                 # exception isn't always raised.
                 logger.info("Connection from {sender} timed out.".format(sender=sender))
-            conn.shutdown(socket.SHUT_RDWR)
-            conn.close()
 
     # Will catch socket.error later; right now we want it to blow us up.
     except KeyboardInterrupt:
