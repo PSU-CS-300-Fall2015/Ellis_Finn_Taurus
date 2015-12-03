@@ -16,6 +16,7 @@ VERSION = "0.2"
 BUF_SIZE = 1024
 PORT = 6283
 KEY = "password"
+USERNAME = "relsqui"
 
 
 class TauNetError(Exception):
@@ -40,6 +41,23 @@ class TauNetMessage(object):
         self.cleartext = ciphersaber2.decrypt(ciphertext, KEY)
         self.parse_headers()
         return self
+
+    def outgoing(self, recipient, message):
+        self.recipient = recipient
+        self.sender = USERNAME
+        self.message = message
+        self.version = VERSION
+        self.cleartext = self.build_headers() + message
+        self.ciphertext = ciphersaber2.encrypt(self.cleartext, KEY)
+        return self
+
+    def build_headers(self):
+        headers = []
+        headers.append("version: " + self.version)
+        headers.append("from: " + self.sender)
+        headers.append("to: " + self.recipient)
+        headers.append("\r\n")
+        return "\r\n".join(headers)
 
     def parse_headers(self):
         cleartext = self.cleartext
