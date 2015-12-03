@@ -11,45 +11,16 @@ TauNet messages directory. If unsuccessful, it logs the reason.
 """
 
 import socket
-import logging
-import os
-import time
-import fcntl
 
 import taunet
+import filesystem
 
 
 # Network connection settings.
 MAX_QUEUE = 10
 
-# Ensure base directory exists.
-TAURUS_DIR = os.path.expanduser("~/.taurus")
-assert os.path.isdir(TAURUS_DIR), "Taurus directory {0} does not exist.".format(TAURUS_DIR)
-
-# Ensure message directory exists.
-MESSAGE_DIR = os.path.join(TAURUS_DIR, "messages")
-assert os.path.isdir(MESSAGE_DIR), "Message directory {0} does not exist.".format(MESSAGE_DIR)
-
-# Set up logger.
-LOG_FILE = os.path.join(TAURUS_DIR, "taurusd.log")
-LOG_FORMAT = "%(asctime)s %(levelname)s: %(message)s"
-LOG_LEVEL = logging.DEBUG
-logging.basicConfig(level=LOG_LEVEL, filename=LOG_FILE, format=LOG_FORMAT)
-logger=logging.getLogger("taurusd")
-
-
-def write_message(tnm):
-    """
-    Write a TauNet message to a file in the message directory.
-    tnm should be a valid TauNetMessage object.
-    """
-    filename = os.path.join(MESSAGE_DIR, tnm.sender)
-    line = "[{time}] {sender}: {message}".format(time=time.strftime("%c"), sender=tnm.sender, message=tnm.message)
-    with open(filename, "w") as f:
-        fcntl.flock(f, fcntl.LOCK_EX)
-        f.write(line)
-        fcntl.flock(f, fcntl.LOCK_UN)
-    logger.info("Wrote message to {filename}.".format(filename=filename))
+# Get our logger object.
+logger=filesystem.get_logger("taurusd")
 
 
 def main_loop():
@@ -82,7 +53,8 @@ def main_loop():
             if data:
                 try:
                     tnm = taunet.TauNetMessage().incoming(data)
-                    write_message(tnm)
+                    filename = filesystem.write_message(tnm)
+                    logger.info("Wrote message to {filename}.".format(filename=filename))
                 except taunet.TauNetError as e:
                     logger.info("Got a badly-formed message ('{error}').".format(error=str(e)))
             else:
