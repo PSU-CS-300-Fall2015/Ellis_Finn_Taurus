@@ -78,7 +78,7 @@ def main_loop():
                 data = None
             if data:
                 try:
-                    tnm = taunet.TauNetMessage(data)
+                    tnm = taunet.TauNetMessage().incoming(data)
                     filename = write_message(tnm)
                     logger.info("Wrote message to {filename}.".format(filename=filename))
                 except taunet.TauNetError as e:
