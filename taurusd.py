@@ -53,6 +53,9 @@ def main_loop():
             if data:
                 try:
                     tnm = taunet.TauNetMessage().incoming(data)
+                    if not tnm.message:
+                        logger.info("Discarding zero-length message.")
+                        continue
                     filename = filesystem.write_message(tnm)
                     logger.info("Wrote message to {filename}.".format(filename=filename))
                 except taunet.TauNetError as e:
