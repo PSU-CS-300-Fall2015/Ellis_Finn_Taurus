@@ -14,6 +14,7 @@ import socket
 import logging
 import os
 import time
+import fcntl
 
 import taunet
 
@@ -42,11 +43,13 @@ def write_message(tnm):
     Write a TauNet message to a file in the message directory.
     tnm should be a valid TauNetMessage object.
     """
-    filename = tnm.sender + "-" + str(time.time())
-    filename = os.path.join(MESSAGE_DIR, filename)
+    filename = os.path.join(MESSAGE_DIR, tnm.sender)
+    line = "[{time}] {sender}: {message}".format(time=time.strftime("%c"), sender=tnm.sender, message=tnm.message)
     with open(filename, "w") as f:
-        f.write(tnm.cleartext)
-    return filename
+        fcntl.flock(f, fcntl.LOCK_EX)
+        f.write(line)
+        fcntl.flock(f, fcntl.LOCK_UN)
+    logger.info("Wrote message to {filename}.".format(filename=filename))
 
 
 def main_loop():
@@ -79,8 +82,7 @@ def main_loop():
             if data:
                 try:
                     tnm = taunet.TauNetMessage().incoming(data)
-                    filename = write_message(tnm)
-                    logger.info("Wrote message to {filename}.".format(filename=filename))
+                    write_message(tnm)
                 except taunet.TauNetError as e:
                     logger.info("Got a badly-formed message ('{error}').".format(error=str(e)))
             else:
