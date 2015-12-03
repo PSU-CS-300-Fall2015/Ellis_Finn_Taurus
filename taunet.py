@@ -9,7 +9,12 @@ Specifically, the TauNetMessage class manages encryption and headers
 for incoming and outgoing messages.
 """
 
+import os
+import fcntl
+import csv
+
 import ciphersaber2
+import filesystem
 
 
 VERSION = "0.2"
@@ -86,3 +91,28 @@ class TauNetMessage(object):
         if self.version == VERSION:
             return True
         return False
+
+
+class TauNetUser(object):
+    """
+    A single TauNet user from the network's user table.
+    """
+    def __init__(self, name, host, port=6283):
+        self.name = name
+        self.host = host
+        self.port = port
+
+
+def get_users():
+    """
+    Parse the user table and return a list of TauNetUser objects.
+    """
+    userlist = []
+    with open(os.path.join(filesystem.TAURUS_DIR, "users.csv"), "r") as f:
+        fcntl.flock(f, fcntl.LOCK_EX)
+        users = f.readlines()
+        fcntl.flock(f, fcntl.LOCK_UN)
+    reader = csv.reader(users)
+    for user in reader:
+        userlist.append(TauNetUser(user[0], user[1], int(user[2])))
+    return userlist
