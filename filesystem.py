@@ -4,8 +4,8 @@
 Copyright (c) 2015 Finn Ellis, licensed under the MIT License.
 (See accompanying LICENSE file for details.)
 
-The parts of Taurus which interact with the filesystem: logging and
-conversation records.
+The parts of Taurus which interact with the filesystem and are shared between
+the sender and listener: logging and conversation records.
 """
 
 import os
@@ -28,12 +28,12 @@ LOG_FORMAT = "%(asctime)s %(levelname)s (%(name)s): %(message)s"
 LOG_LEVEL = logging.DEBUG
 logging.basicConfig(level=LOG_LEVEL, filename=LOG_FILE, format=LOG_FORMAT)
 
+
 def get_logger(name):
     """
     Utility function to retrieve logger objects for other modules.
     """
     return logging.getLogger(name)
-
 
 def write_message(tnm):
     """
