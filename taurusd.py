@@ -72,11 +72,8 @@ def main_loop():
                 logger.warning("Got a message from an unknown user ({user}), discarding.".format(user=tnm.sender))
                 continue
             correct_origin = socket.gethostbyname(tnu.host)
-            if sender != correct_origin:
-                # Not bothering to put the host data in this message because
-                # the sending IP is in the log right above it, and the correct
-                # host is in the user table.
-                logger.warning("Got a message from a known user ({user}) at the wrong host, discarding.".format(user=tnm.sender))
+            if sender[0] != correct_origin:
+                logger.warning("Got a message from a known user ({user}) at the wrong host ({wrong} instead of {right}), discarding.".format(user=tnm.sender, wrong=sender[0], right=correct_origin))
                 continue
             if tnm.version != taunet.VERSION:
                 # If it got this far, nothing seems to be wrong with it. Warn, but keep.
