@@ -44,7 +44,15 @@ Messages longer than the maximum guaranteed-possible length given by the TauNet 
 
 `cd cs2-tests; ./test.sh` to verify their output against known data.
 
-`test_message` contains a TauNet v0.2-compliant message, including headers, in cleartext, which can be used with the above to test the daemon. Note that messages should (and will, by Taurus) be rejected if the usernames and sending IP aren't present and associated with each other in the user table.
+`test_messages/` contains text files which can be used to test various parts of the system. Specifically:
+
+* `tnm.txt` is a TauNet v0.2-compliant message, including headers, with made-up usernames. It can be used to test the listener alone with something like:
+
+```
+cat test_messages/tnm.txt | ./ciphersaber2.py --key password | nc localhost 6283
+```
+
+* `long_lorem.txt` contains two lines, a username and a message, and is intended to be catted into `taurus.py`. The message is 1024 bytes long, and should automatically be truncated when sent.
 
 ## Logs
 
