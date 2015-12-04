@@ -18,14 +18,20 @@ logger=filesystem.get_logger("taurus")
 
 def send_message(tnu, message):
     tnm = taunet.TauNetMessage().outgoing(tnu.name, message)
+    user_string = "{user} ({host}:{port})".format(user=tnu.name, host=tnu.host, port=str(tnu.port))
     sender = socket.socket()
     sender.settimeout(3)
-    sender.connect((tnu.host, tnu.port))
-    sender.send(tnm.ciphertext)
+    try:
+        sender.connect((tnu.host, tnu.port))
+        sender.send(tnm.ciphertext)
+    except socket.timeout as e:
+        print("Unable to reach {user}: {reason}".format(user=user_string, reason=str(e)))
+        logger.error("Failed to send a message to {user}: {reason}".format(user=user_string, reason=str(e)))
+    else:
+        logger.info("Sent a message to {user}.".format(user=user_string))
+        filesystem.write_message(tnu.name, tnm)
     sender.shutdown(socket.SHUT_RDWR)
     sender.close()
-    logger.info("Sent a message to {name} ({host}:{port}).".format(name=tnu.name, host=tnu.host, port=str(tnu.port)))
-    filesystem.write_message(tnu.name, tnm)
 
 
 if __name__ == "__main__":

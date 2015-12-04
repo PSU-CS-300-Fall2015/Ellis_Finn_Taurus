@@ -32,9 +32,9 @@ If any of those is not true, the message is discarded and the reason is logged. 
 
 ### Sending Messages
 
-Run `./taurus.py`. It will prompt you for a username, verify that it's in the user table, and then prompt for a message and attempt to send the message to the user's host.
+Run `./taurus.py`. It will prompt for a username and verify that that name is in the user table. If it isn't, the list of available recipients will be displayed instead.
 
-If the username is not in the table, the list of available usernames will be displayed instead.
+If the user is found, Taurus will prompt for a message and attempt to send it to the matching host. If it can't reach that host, it will display an error message.
 
 ## Tests
 
