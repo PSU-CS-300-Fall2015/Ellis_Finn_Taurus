@@ -14,19 +14,27 @@ Create directories for Taurus to work in:
 mkdir -p ~/.taurus/messages
 ```
 
-Update the variable `KEY` in taunet.py to your actual encryption key.
+Create the file `~/.taurus/usertable.csv`, where each line is of the form `username,host,port`. Hosts can be either IPv4 addresses or hostnames. At least the username and host portions of the content (those parts which are required by the TauNet specification) should be identical to the information distributed to every other node on the TauNetwork. Port should normally be 6283 for everyone.
+
+Update the variable `KEY` in `taunet.py` to the encryption key for the TauNetwork, and `USERNAME` to your username in the user table.
 
 ### Receiving Messages
 
-Start the daemon with `./taurusd.py &`. It will decrypt any received messages and write them into files in `~/.taurus/messages`, named after their senders and timestamps. Any messages which can't be decrypted with the key in `taunet.py` and parsed using the specified version of TauNet are discarded (with the reason logged). No other message filtering or verification is performed. Information, including sender IPs, is logged to `~/.taurus/taurusd.log`.
+Start the daemon with `./taurusd.py &`. It will listen for messages and check for all of the following:
+
+* The message can be decrypted with the key in `taunet.py`.
+* The headers and formatting of the cleartext conform to the TauNet specification.
+* The message is of nonzero length.
+* The message is addressed to the username specified in `taunet.py`.
+* The message came from a username in the user table, with the correct IP or hostname.
+
+If any of those is not true, the message is discarded and the reason is logged. If all of them are true, the message is timestamped and appended to a file in `~/.taurus/messages/` named after the sender.
 
 ### Sending Messages
 
-Not yet implemented. In the meantime, this does the trick, assuming `tnm` is a text file containing a properly-formatted TauNet message, and the variables contain what they say they do.
+Run `./taurus.py`. It will prompt you for a username, verify that it's in the user table, and then prompt for a message and attempt to send the message to the user's host.
 
-```
-cat tnm | ./ciphersaber2.py --key $ENCRYPTION_KEY | nc $DESTINATION_IP 6283
-```
+If the username is not in the table, the list of available usernames will be displayed instead.
 
 ## Tests
 
@@ -34,4 +42,8 @@ cat tnm | ./ciphersaber2.py --key $ENCRYPTION_KEY | nc $DESTINATION_IP 6283
 
 `cd cs2-tests; ./test.sh` to verify their output against known data.
 
-`test_message` contains a TauNet v0.2-compliant message, including headers, in cleartext, which can be used with the above to test the daemon.
+`test_message` contains a TauNet v0.2-compliant message, including headers, in cleartext, which can be used with the above to test the daemon. Note that messages should (and will, by Taurus) be rejected if the usernames and sending IP aren't present and associated with each other in the user table.
+
+## Logs
+
+Both the sender and receiver log information in `~/.taurus/taurus.log`.
