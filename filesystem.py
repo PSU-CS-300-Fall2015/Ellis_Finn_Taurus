@@ -35,12 +35,15 @@ def get_logger(name):
     """
     return logging.getLogger(name)
 
-def write_message(tnm):
+def write_message(conversation, tnm):
     """
     Write a TauNet message to the appropriate conversation in the message
-    directory. tnm should be a valid TauNetMessage object.
+    directory. tnm should be a valid TauNetMessage object, and conversation
+    the name of the conversation file which should be updated (normally the
+    name of the non-local user: the sender of incoming messages, and the
+    recipient of outgoing ones).
     """
-    filename = os.path.join(MESSAGE_DIR, tnm.sender)
+    filename = os.path.join(MESSAGE_DIR, conversation)
     line = "[{time}] {sender}: {message}\n".format(time=time.strftime("%c"), sender=tnm.sender, message=tnm.message)
     with open(filename, "a") as f:
         fcntl.flock(f, fcntl.LOCK_EX)

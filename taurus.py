@@ -24,8 +24,8 @@ def send_message(tnu, message):
     sender.send(tnm.ciphertext)
     sender.shutdown(socket.SHUT_RDWR)
     sender.close()
-    filesystem.write_message(tnm)
     logger.info("Sent a message to {name} ({host}:{port}).".format(name=tnu.name, host=tnu.host, port=str(tnu.port)))
+    filesystem.write_message(tnu.name, tnm)
 
 
 if __name__ == "__main__":

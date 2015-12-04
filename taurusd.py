@@ -56,7 +56,7 @@ def main_loop():
                     if not tnm.message:
                         logger.info("Discarding zero-length message.")
                         continue
-                    filename = filesystem.write_message(tnm)
+                    filename = filesystem.write_message(tnm.sender, tnm)
                     logger.info("Wrote message to {filename}.".format(filename=filename))
                 except taunet.TauNetError as e:
                     logger.info("Got a badly-formed message ('{error}').".format(error=str(e)))
