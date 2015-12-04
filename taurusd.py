@@ -56,6 +56,9 @@ def main_loop():
                     if not tnm.message:
                         logger.info("Discarding zero-length message.")
                         continue
+                    if tnm.recipient != taunet.USERNAME:
+                        logger.warning("Got a message for a user who's not us ({user}), discarding.".format(user=tnm.recipient))
+                        continue
                     tnu = taunet.users.by_name(tnm.sender)
                     if tnu == None:
                         logger.warning("Got a message from unknown user ({user}), discarding.".format(user=tnm.sender))
