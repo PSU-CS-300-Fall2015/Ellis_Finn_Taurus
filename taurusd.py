@@ -50,34 +50,41 @@ def main_loop():
                 data = conn.recv(taunet.BUF_SIZE)
             except socket.timeout:
                 data = None
-            if data:
-                try:
-                    tnm = taunet.TauNetMessage().incoming(data)
-                    if not tnm.message:
-                        logger.info("Discarding zero-length message.")
-                        continue
-                    if tnm.recipient != taunet.USERNAME:
-                        logger.warning("Got a message for a user who's not us ({user}), discarding.".format(user=tnm.recipient))
-                        continue
-                    tnu = taunet.users.by_name(tnm.sender)
-                    if tnu == None:
-                        logger.warning("Got a message from unknown user ({user}), discarding.".format(user=tnm.sender))
-                        continue
-                    correct_origin = socket.gethostbyname(tnu.host)
-                    if sender != correct_origin:
-                        logger.warning("Got message from known user ({user}) at the wrong host, discarding.".format(user=tnm.sender))
-                        continue
-                    if tnm.version != taunet.VERSION:
-                        # If it got this far, nothing seems to be wrong with it. Warn, but keep.
-                        logger.warning("Incoming message version doesn't match ours; may be malformed.")
-                    filename = filesystem.write_message(tnm.sender, tnm)
-                    logger.info("Wrote message to {filename}.".format(filename=filename))
-                except taunet.TauNetError as e:
-                    logger.warning("Got a badly-formed message ('{error}').".format(error=str(e)))
-            else:
+
+            if not data:
                 # The error message is here instead of above because the
                 # exception isn't always raised.
                 logger.info("Connection from {sender} timed out.".format(sender=sender))
+
+            try:
+                tnm = taunet.TauNetMessage().incoming(data)
+            except taunet.TauNetError as e:
+                logger.warning("Got a badly-formed message ('{error}'). Discarding.".format(error=str(e)))
+                continue
+            if not tnm.message:
+                logger.info("Discarding zero-length message.")
+                continue
+            if tnm.recipient != taunet.USERNAME:
+                logger.warning("Got a message for a user who's not us ({user}), discarding.".format(user=tnm.recipient))
+                continue
+            tnu = taunet.users.by_name(tnm.sender)
+            if tnu == None:
+                logger.warning("Got a message from an unknown user ({user}), discarding.".format(user=tnm.sender))
+                continue
+            correct_origin = socket.gethostbyname(tnu.host)
+            if sender != correct_origin:
+                # Not bothering to put the host data in this message because
+                # the sending IP is in the log right above it, and the correct
+                # host is in the user table.
+                logger.warning("Got a message from a known user ({user}) at the wrong host, discarding.".format(user=tnm.sender))
+                continue
+            if tnm.version != taunet.VERSION:
+                # If it got this far, nothing seems to be wrong with it. Warn, but keep.
+                logger.warning("Incoming message version doesn't match ours; may be malformed.")
+
+            # Hooray! We got a nice message!
+            filename = filesystem.write_message(tnm.sender, tnm)
+            logger.info("Wrote message to {filename}.".format(filename=filename))
 
     # Will catch socket.error later; right now we want it to blow us up.
     except KeyboardInterrupt:
