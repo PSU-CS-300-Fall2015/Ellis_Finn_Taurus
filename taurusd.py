@@ -67,6 +67,9 @@ def main_loop():
                     if sender != correct_origin:
                         logger.warning("Got message from known user ({user}) at the wrong host, discarding.".format(user=tnm.sender))
                         continue
+                    if tnm.version != taunet.VERSION:
+                        # If it got this far, nothing seems to be wrong with it. Warn, but keep.
+                        logger.warning("Incoming message version doesn't match ours; may be malformed.")
                     filename = filesystem.write_message(tnm.sender, tnm)
                     logger.info("Wrote message to {filename}.".format(filename=filename))
                 except taunet.TauNetError as e:
