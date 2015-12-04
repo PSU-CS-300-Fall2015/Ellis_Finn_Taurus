@@ -56,6 +56,14 @@ def main_loop():
                     if not tnm.message:
                         logger.info("Discarding zero-length message.")
                         continue
+                    tnu = taunet.users.by_name(tnm.sender)
+                    if tnu == None:
+                        logger.warning("Got a message from unknown user ({user}), discarding.".format(user=tnm.sender))
+                        continue
+                    correct_origin = socket.gethostbyname(tnu.host)
+                    if sender != correct_origin:
+                        logger.warning("Got message from known user ({user}) at the wrong host, discarding.".format(user=tnm.sender))
+                        continue
                     filename = filesystem.write_message(tnm.sender, tnm)
                     logger.info("Wrote message to {filename}.".format(filename=filename))
                 except taunet.TauNetError as e:
