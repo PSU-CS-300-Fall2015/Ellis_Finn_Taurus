@@ -55,6 +55,7 @@ def main_loop():
                 # The error message is here instead of above because the
                 # exception isn't always raised.
                 logger.info("Connection from {sender} timed out.".format(sender=sender))
+                continue
 
             try:
                 tnm = taunet.TauNetMessage().incoming(data)
