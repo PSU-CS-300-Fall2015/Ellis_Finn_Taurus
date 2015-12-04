@@ -121,11 +121,6 @@ class TauNetMessage(object):
         self.sender = headers["from"]
         self.recipient = headers["to"]
 
-    def version_ok(self):
-        if self.version == VERSION:
-            return True
-        return False
-
 
 class TauNetUser(object):
     """
