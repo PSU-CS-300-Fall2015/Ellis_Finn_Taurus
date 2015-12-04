@@ -59,7 +59,7 @@ def main_loop():
                     filename = filesystem.write_message(tnm.sender, tnm)
                     logger.info("Wrote message to {filename}.".format(filename=filename))
                 except taunet.TauNetError as e:
-                    logger.info("Got a badly-formed message ('{error}').".format(error=str(e)))
+                    logger.warning("Got a badly-formed message ('{error}').".format(error=str(e)))
             else:
                 # The error message is here instead of above because the
                 # exception isn't always raised.
