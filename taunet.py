@@ -5,8 +5,9 @@ Copyright (c) 2015 Finn Ellis, licensed under the MIT License.
 (See accompanying LICENSE file for details.)
 
 This file defines constants and classes related to the TauNet protocol.
-Specifically, the TauNetMessage class manages encryption and headers
-for incoming and outgoing messages.
+In particular, the TauNetMessage class manages encryption and headers
+for incoming and outgoing messages, and the UserTable class contains
+information about valid users and functions for finding them.
 """
 
 import os
@@ -34,7 +35,14 @@ class TauNetError(Exception):
 
 class TauNetMessage(object):
     """
-    TauNet message data. To parse an incoming message, pass in the ciphertext.
+    TauNet message data. This should generally be instantiated by calling
+    one of the message type functions:
+
+    TauNetMessage().incoming(ciphertext)
+    or
+    TauNetMessage().outgoing(recipient, message)
+
+    Either one will cause all the appropriate fields to be populated.
     """
     def __init__(self):
         self.ciphertext = None
@@ -46,12 +54,25 @@ class TauNetMessage(object):
         self.message = None
 
     def incoming(self, ciphertext):
+        """
+        Read in received ciphertext and populate the TauNetMessage with its
+        contents. Successful return of this function means that the ciphertext
+        was decrypted, the version verified, and headers parsed.
+
+        Returns the populated TauNetMessage.
+        """
         self.ciphertext = ciphertext
         self.cleartext = ciphersaber2.decrypt(ciphertext, KEY)
         self.parse_headers()
         return self
 
     def outgoing(self, recipient, message):
+        """
+        Build a properly-formatted TauNetMessage with the given payload
+        and addressed to the recipient, and encrypt it. The ciphertext
+        attribute of the returned TauNetMessage is ready to be sent over
+        the network.
+        """
         self.recipient = recipient
         self.sender = USERNAME
         self.message = message[:MAX_MESSAGE]
@@ -61,6 +82,11 @@ class TauNetMessage(object):
         return self
 
     def build_headers(self):
+        """
+        Use the object attributes to build a header string, which can then
+        be prepended to the message payload to get a cleartext message ready
+        for encryption.
+        """
         headers = []
         headers.append("version: " + self.version)
         headers.append("from: " + self.sender)
@@ -69,6 +95,10 @@ class TauNetMessage(object):
         return "\r\n".join(headers)
 
     def parse_headers(self):
+        """
+        Parse the TauNet headers out of the cleartext attribute and populate
+        the other specific attributes: version, sender, recipient, and message.
+        """
         cleartext = self.cleartext
         headers = {}
         try:
@@ -108,6 +138,9 @@ class TauNetUser(object):
 
 
 class UserTable(object):
+    """
+    The list of valid users whom messages can be sent to and received from.
+    """
     def __init__(self):
         self.load_users()
 
