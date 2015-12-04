@@ -36,6 +36,8 @@ Run `./taurus.py`. It will prompt for a username and verify that that name is in
 
 If the user is found, Taurus will prompt for a message and attempt to send it to the matching host. If it can't reach that host, it will display an error message.
 
+Messages longer than the maximum guaranteed-possible length given by the TauNet protocol will be truncated to that length. (The guaranteed-possible length is the maximum overall message size minus the maximum header size.)
+
 ## Tests
 
 `./encryption.py --test` to run internal consistency tests on the encryption functions.

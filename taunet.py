@@ -23,6 +23,10 @@ PORT = 6283
 KEY = "password"
 USERNAME = "relsqui"
 
+MAX_TNM = 1024
+MAX_HEADERS = 90
+MAX_MESSAGE = MAX_TNM - MAX_HEADERS
+
 
 class TauNetError(Exception):
     pass
@@ -50,7 +54,7 @@ class TauNetMessage(object):
     def outgoing(self, recipient, message):
         self.recipient = recipient
         self.sender = USERNAME
-        self.message = message
+        self.message = message[:MAX_MESSAGE]
         self.version = VERSION
         self.cleartext = self.build_headers() + message
         self.ciphertext = ciphersaber2.encrypt(self.cleartext, KEY)
