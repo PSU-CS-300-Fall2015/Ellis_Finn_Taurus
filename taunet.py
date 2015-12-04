@@ -103,16 +103,47 @@ class TauNetUser(object):
         self.port = port
 
 
-def get_users():
-    """
-    Parse the user table and return a list of TauNetUser objects.
-    """
-    userlist = []
-    with open(os.path.join(filesystem.TAURUS_DIR, "users.csv"), "r") as f:
-        fcntl.flock(f, fcntl.LOCK_EX)
-        users = f.readlines()
-        fcntl.flock(f, fcntl.LOCK_UN)
-    reader = csv.reader(users)
-    for user in reader:
-        userlist.append(TauNetUser(user[0], user[1], int(user[2])))
-    return userlist
+class UserTable(object):
+    def __init__(self):
+        self.load_users()
+
+    def load_users(self):
+        """
+        Parse the user table file and populate lists of TauNetUser objects.
+        """
+        self.users_by_host = {}
+        self.users_by_name = {}
+        self.all_users = []
+        with open(os.path.join(filesystem.TAURUS_DIR, "users.csv"), "r") as f:
+            fcntl.flock(f, fcntl.LOCK_EX)
+            reader = csv.reader(f.readlines())
+            fcntl.flock(f, fcntl.LOCK_UN)
+        for user in reader:
+            tnu = TauNetUser(user[0], user[1], int(user[2]))
+            self.users_by_host[user[1]] = tnu
+            self.users_by_name[user[0]] = tnu
+            self.all_users.append(tnu)
+
+    def all(self):
+        """
+        Fetch the complete user list. This is a function just for consistency
+        with the other two user-fetching functions.
+        """
+        return self.all_users
+
+    def by_name(self, name):
+        """
+        Check the user table for a TauNetUser with the name given. If found,
+        return it. Otherwise, return None.
+        """
+        return self.users_by_name.get(name)
+
+    def by_host(self, host):
+        """
+        Check the user table for a TauNetUser with the host given. If found,
+        return it. Otherwise, return None.
+        """
+        return self.users_by_host.get(host)
+
+
+users = UserTable()
