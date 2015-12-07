@@ -43,7 +43,7 @@ def main_loop():
             conn, sender = listener.accept()
             assert conn, "Failed to make connection socket"
             assert sender, "Made connection, but have no sender"
-            logger.info("Got a connection from {sender}.".format(sender=sender))
+            logger.debug("Got a connection from {sender}.".format(sender=sender))
             # Don't block when connected; time out if we get no data.
             conn.settimeout(3)
             try:
@@ -54,7 +54,7 @@ def main_loop():
             if not data:
                 # The error message is here instead of above because the
                 # exception isn't always raised.
-                logger.info("Connection from {sender} timed out.".format(sender=sender))
+                logger.debug("Connection from {sender} timed out.".format(sender=sender))
                 continue
 
             try:
