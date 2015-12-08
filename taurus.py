@@ -8,6 +8,7 @@ Copyright (c) 2015 Finn Ellis, licensed under the MIT License.
 import socket
 import sys
 import curses
+import time
 
 import taunet
 import filesystem
@@ -144,8 +145,28 @@ def read_message(stdscr, conversation):
     """
     View the backlog of a specific message.
     """
-    print("Viewing conversation with {user}".format(user=conversation))
-    stdscr.getch()
+    stdscr.nodelay(1)
+    backlog = []
+    tail = filesystem.tail_conversation(conversation)
+    while True:
+        old_backlog = len(backlog)
+        for line in tail:
+            if line:
+                backlog.append(line)
+            else:
+                break
+        if old_backlog != len(backlog):
+            stdscr.erase()
+            safe_put(stdscr, "Viewing conversation with {user}. You can (r)eply or (q)uit.".format(user=conversation), (0, 0))
+            safe_put(stdscr, "\r".join(backlog[-20:]), (2, 0))
+            stdscr.refresh()
+        selection = stdscr.getch()
+        if selection > -1 and chr(selection) in "qr":
+            break
+        time.sleep(0.1)
+    stdscr.nodelay(0)
+    stdscr.clear()
+    stdscr.refresh()
 
 def menu(stdscr):
     """

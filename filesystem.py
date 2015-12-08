@@ -56,3 +56,13 @@ def conversations():
     Return a list of the filenames of all conversations available for viewing.
     """
     return sorted(os.listdir(MESSAGE_DIR))
+
+def tail_conversation(conversation):
+    """
+    Yield lines from the backlog of the specified conversation. Yields an empty
+    string when EOF is encountered, but will keep trying. This is based on
+    this clever SO answer: http://stackoverflow.com/a/1703997
+    """
+    with open(os.path.join(MESSAGE_DIR, conversation), "r") as f:
+        while True:
+            yield f.readline()
