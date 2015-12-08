@@ -131,6 +131,11 @@ def list_messages(stdscr):
     possibilities = conversations
     while len(possibilities) > 1:
         selection += chr(stdscr.getch())
+        if selection.endswith("\n") and selection[:-1] in possibilities:
+            # Hit enter to confirm the choice of a username when it's a
+            # substring of another username.
+            possibilities = [selection[:-1]]
+            break
         possibilities = [p for p in possibilities if p.startswith(selection)]
     curses.curs_set(0)
     curses.noecho()
