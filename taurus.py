@@ -110,12 +110,50 @@ def view_users(stdscr):
     stdscr.clear()
     stdscr.refresh()
 
+def list_messages(stdscr):
+    """
+    List the messages available to be read and prompt to read one.
+    """
+    # Show the cursor and echo output.
+    curses.curs_set(1)
+    curses.echo()
+    conversations = filesystem.conversations()
+    stdscr.clear()
+    row = 1
+    column = 1
+    for name in conversations:
+        safe_put(stdscr, name, (row, column))
+        row += 1
+    safe_put(stdscr, "Start typing a name: ", (row+1, column))
+    stdscr.refresh()
+    selection = ""
+    possibilities = conversations
+    while len(possibilities) > 1:
+        selection += chr(stdscr.getch())
+        possibilities = [p for p in possibilities if p.startswith(selection)]
+    curses.curs_set(0)
+    curses.noecho()
+    stdscr.clear()
+    stdscr.refresh()
+    if possibilities:
+        read_message(stdscr, possibilities[0])
+    else:
+        print("No user matched '{selection}'".format(selection=selection))
+
+def read_message(stdscr, conversation):
+    """
+    View the backlog of a specific message.
+    """
+    print("Viewing conversation with {user}".format(user=conversation))
+    stdscr.getch()
+
 def menu(stdscr):
     """
     Display the menu of basic commands and execute the requested one.
     """
     options = {}
     options["v"] = ("(V)iew user list", view_users)
+    options["r"] = ("(R)ead messages", list_messages)
     options["s"] = ("(S)end a new message", send_message)
     while True:
         # Don't show the cursor or echo output.

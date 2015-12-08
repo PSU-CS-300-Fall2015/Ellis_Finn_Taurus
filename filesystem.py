@@ -50,3 +50,9 @@ def write_message(conversation, tnm):
         f.write(line)
         fcntl.flock(f, fcntl.LOCK_UN)
     return filename
+
+def conversations():
+    """
+    Return a list of the filenames of all conversations available for viewing.
+    """
+    return sorted(os.listdir(MESSAGE_DIR))
