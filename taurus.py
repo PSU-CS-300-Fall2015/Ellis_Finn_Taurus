@@ -153,10 +153,11 @@ def read_message(stdscr, conversation):
     """
     View the backlog of a specific message.
     """
-    stdscr.nodelay(1)
     backlog = []
     tail = filesystem.tail_conversation(conversation)
     while True:
+        # This setting is inside the loop because the reply mode disables it.
+        stdscr.nodelay(1)
         old_backlog = len(backlog)
         for line in tail:
             if line:
