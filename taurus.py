@@ -63,19 +63,22 @@ def is_online(tnu):
         return True
     return False
 
-def send_message(stdscr):
+def send_message(stdscr, username=None):
     """
     Prompt for a user and message, generate a TauNetMessage, and send it.
+    The optional keyword argument is a TauNetUser; if this is supplied,
+    the user won't be prompted for a username.
     """
     # Show the cursor and echo output.
     curses.curs_set(1)
     curses.echo()
     stdscr.clear()
     stdscr.refresh()
-    safe_put(stdscr, "Recipient username: ", (0, 0))
-    username = stdscr.getstr(0, 20)
-    stdscr.clear()
-    stdscr.refresh()
+    if username is None:
+        safe_put(stdscr, "Recipient username: ", (0, 0))
+        username = stdscr.getstr(0, 20)
+        stdscr.clear()
+        stdscr.refresh()
     tnu = taunet.users.by_name(username)
     if tnu == None:
         print("No such user. Known users: " + ", ".join(sorted([u.name for u in taunet.users.all()])))
@@ -166,8 +169,11 @@ def read_message(stdscr, conversation):
             safe_put(stdscr, "\r".join(backlog[-20:]), (2, 0))
             stdscr.refresh()
         selection = stdscr.getch()
-        if selection > -1 and chr(selection) in "qr":
+        if selection == ord("q"):
             break
+        if selection == ord("r"):
+            stdscr.nodelay(0)
+            send_message(stdscr, conversation)
         time.sleep(0.1)
     stdscr.nodelay(0)
     stdscr.clear()
