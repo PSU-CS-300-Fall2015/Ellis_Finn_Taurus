@@ -18,25 +18,37 @@ Create the file `~/.taurus/usertable.csv`, where each line is of the form `usern
 
 Update the variable `KEY` in `taunet.py` to the encryption key for the TauNetwork, and `USERNAME` to your username in the user table.
 
-### Receiving Messages
+### The Listening Daemon
 
 Start the daemon with `./taurusd.py &`. It will listen for messages and check for all of the following:
 
+* The transmission is of nonzero length.
 * The message can be decrypted with the key in `taunet.py`.
 * The headers and formatting of the cleartext conform to the TauNet specification.
-* The message is of nonzero length.
 * The message is addressed to the username specified in `taunet.py`.
 * The message came from a username in the user table, with the correct IP or hostname.
 
-If any of those is not true, the message is discarded and the reason is logged. If all of them are true, the message is timestamped and appended to a file in `~/.taurus/messages/` named after the sender.
+If any of those is not true, the message is discarded and the reason is logged (except the empty transmission, which is treated as a test connection). If all of them are true, the message is timestamped and appended to a file in `~/.taurus/messages/` named after the sender.
 
-### Sending Messages
+### The Client
 
-Run `./taurus.py`. It will prompt for a username and verify that that name is in the user table. If it isn't, the list of available recipients will be displayed instead.
+Run `./taurus.py` to start the Taunet client. The main menu options are as follows:
 
-If the user is found, Taurus will prompt for a message and attempt to send it to the matching host. If it can't reach that host, it will display an error message.
+#### Read Messages
 
-Messages longer than the maximum guaranteed-possible length given by the TauNet protocol will be truncated to that length. (The guaranteed-possible length is the maximum overall message size minus the maximum header size.)
+This will present you with a list of existing conversations. You can select one by typing enough of the name for your choice to be unique. (To intput a username which is an initial substring of another username, hit enter when you're finished typing it.) This will show you up to 20 lines of conversation backlog, and will update as new messages come in.
+
+#### Send a Message
+
+Type a username. Taunet will check if the user is online and able to receive messages, and if so, will prompt you for a message to send and then send it. Messages longer than the maximum guaranteed-possible length given by the TauNet protocol will be truncated to that length. (The guaranteed-possible length is the maximum overall message size minus the maximum header size.)
+
+#### Update Node Status
+
+Taunet stores the last known online status (available or unavailable) for each node in the network. Use this command to update that information by attempting to send an empty test message to each node. This may take a few minutes, depending on your network size! (It will display its progress as it goes.)
+
+#### View User List
+
+This simply lists the other users to whom you can send messages. Any that were online last time Taunet checked will be marked with an asterisk. You can refresh this information by updating the node status (see above).
 
 ## Tests
 
