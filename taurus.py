@@ -69,9 +69,11 @@ def menu(stdscr):
     """
     Display the menu of basic commands and execute the requested one.
     """
-    # Don't show the cursor.
-    curses.curs_set(0)
     while True:
+        # Don't show the cursor or echo output.
+        # These are inside the loop so menu items can unset them.
+        curses.curs_set(0)
+        curses.noecho()
         safe_put(stdscr, "(S)end a new message", (5, 5))
         safe_put(stdscr, "(Q)uit Taurus", (6, 5))
         stdscr.refresh()
