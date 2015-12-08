@@ -16,6 +16,7 @@ import filesystem
 # Set up logger.
 logger=filesystem.get_logger("taurus")
 
+
 def safe_put(stdscr, string, loc):
     """
     Print to the given location. This is a workaround because curses won't
@@ -113,24 +114,27 @@ def menu(stdscr):
     """
     Display the menu of basic commands and execute the requested one.
     """
+    options = {}
+    options["v"] = ("(V)iew user list", view_users)
+    options["s"] = ("(S)end a new message", send_message)
     while True:
         # Don't show the cursor or echo output.
         # These are inside the loop so menu items can unset them.
         curses.curs_set(0)
         curses.noecho()
-        safe_put(stdscr, "(V)iew user list", (4, 5))
-        safe_put(stdscr, "(S)end a new message", (5, 5))
-        safe_put(stdscr, "(Q)uit Taurus", (6, 5))
+        row = 4
+        column = 5
+        for o in options:
+            safe_put(stdscr, options[o][0], (row, column))
+            row += 1
+        safe_put(stdscr, "(Q)uit Taurus", (row+1, column))
         stdscr.refresh()
 
         c = stdscr.getch()
-        if c == ord("q"):
+        if chr(c) == "q":
             break
-        elif c == ord("v"):
-            view_users(stdscr)
-        elif c == ord("s"):
-            send_message(stdscr)
-
+        if chr(c) in options:
+            options[chr(c)][1](stdscr)
 
 if __name__ == "__main__":
     curses.wrapper(menu)
