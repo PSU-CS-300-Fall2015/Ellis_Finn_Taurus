@@ -28,28 +28,10 @@ def safe_put(stdscr, string, loc):
     else:
         stdscr.addstr(loc[0], loc[1], string.encode("utf-8"))
 
-def send_message(stdscr):
+def ship_tnm(tnu, tnm):
     """
-    Prompt for a user and message, generate a TauNetMessage, and send it.
+    Send a TauNetMessage over the network to its recipient.
     """
-    # Echo input while typing things.
-    curses.echo()
-
-    stdscr.clear()
-    stdscr.refresh()
-    safe_put(stdscr, "Recipient username: ", (0, 0))
-    username = stdscr.getstr(0, 20)
-    tnu = taunet.users.by_name(username)
-    if tnu == None:
-        print("No such user. Known users: " + ", ".join(sorted([u.name for u in taunet.users.all()])))
-        curses.noecho()
-        return
-
-    safe_put(stdscr, "Message:", (1, 0))
-    message = stdscr.getstr(1, 9)
-    curses.noecho()
-
-    tnm = taunet.TauNetMessage().outgoing(tnu.name, message)
     user_string = "{user} ({host}:{port})".format(user=tnu.name, host=tnu.host, port=str(tnu.port))
     sender = socket.socket()
     sender.settimeout(3)
@@ -64,6 +46,25 @@ def send_message(stdscr):
         filesystem.write_message(tnu.name, tnm)
     sender.shutdown(socket.SHUT_RDWR)
     sender.close()
+
+def send_message(stdscr):
+    """
+    Prompt for a user and message, generate a TauNetMessage, and send it.
+    """
+    # Show the cursor and echo output.
+    curses.curs_set(1)
+    curses.echo()
+    stdscr.clear()
+    stdscr.refresh()
+    safe_put(stdscr, "Recipient username: ", (0, 0))
+    username = stdscr.getstr(0, 20)
+    tnu = taunet.users.by_name(username)
+    if tnu == None:
+        print("No such user. Known users: " + ", ".join(sorted([u.name for u in taunet.users.all()])))
+        return
+    safe_put(stdscr, "Message:", (1, 0))
+    message = stdscr.getstr(1, 9)
+    ship_tnm(tnu, taunet.TauNetMessage().outgoing(tnu.name, message))
 
 def menu(stdscr):
     """
