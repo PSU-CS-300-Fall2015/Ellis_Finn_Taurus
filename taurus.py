@@ -60,7 +60,9 @@ def is_online(tnu):
     Attempt to send an empty message, to see if a TauNet node is online.
     """
     if ship_tnm(tnu, taunet.TauNetMessage().test(tnu.name)):
+        taunet.users.by_name(tnu.name).is_on = True
         return True
+    taunet.users.by_name(tnu.name).is_on = False
     return False
 
 def send_message(stdscr, username=None):
@@ -92,22 +94,31 @@ def send_message(stdscr, username=None):
     stdscr.refresh()
     ship_tnm(tnu, taunet.TauNetMessage().outgoing(tnu.name, message))
 
+def update_status(stdscr):
+    """
+    Update the online status of the users in the table.
+    """
+    safe_put(stdscr, "Checking node status, please wait ...", (2, 1))
+    for user in taunet.users.all():
+        safe_put(stdscr, user.name.ljust(30), (2, 39))
+        stdscr.refresh()
+        is_online(user)
+    stdscr.clear()
+    stdscr.refresh()
+
 def view_users(stdscr):
     """
     View the list of users and their status.
     """
     stdscr.clear()
-    safe_put(stdscr, "Checking node status, please wait ...", (2, 1))
-    stdscr.refresh()
-    users_by_status = [(is_online(u), u) for u in sorted(taunet.users.all(), key=lambda u: u.name)]
-    safe_put(stdscr, "(* denotes a user available for messaging. Hit any key to return to the menu.)", (2, 1))
+    safe_put(stdscr, "* marks a user online at last update. Hit any key to return to menu.", (2, 1))
     row = 4
-    column = 1
-    for user in sorted(taunet.users.all()):
-        if is_online(user):
-            safe_put(stdscr, "*", (row, column))
-        safe_put(stdscr, user.name, (row, column+2))
+    for user in taunet.users.all():
+        if user.is_on:
+            safe_put(stdscr, "*", (row, 1))
+        safe_put(stdscr, user.name, (row, 3))
         row += 1
+    stdscr.refresh()
 
     # Wait for any key, then clear and return to menu.
     stdscr.getch()
@@ -188,6 +199,7 @@ def menu(stdscr):
     options["v"] = ("(V)iew user list", view_users)
     options["r"] = ("(R)ead messages", list_messages)
     options["s"] = ("(S)end a new message", send_message)
+    options["u"] = ("(U)pdate online status (may take a minute)", update_status)
     while True:
         # Don't show the cursor or echo output.
         # These are inside the loop so menu items can unset them.

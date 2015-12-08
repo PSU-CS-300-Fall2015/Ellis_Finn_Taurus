@@ -138,6 +138,7 @@ class TauNetUser(object):
         self.name = name
         self.host = host
         self.port = port
+        self.is_on = False
 
 
 class UserTable(object):
@@ -169,7 +170,7 @@ class UserTable(object):
         Fetch the complete user list. This is a function just for consistency
         with the other two user-fetching functions.
         """
-        return self.all_users
+        return sorted(self.all_users, key=lambda u: u.name.lower())
 
     def by_name(self, name):
         """
