@@ -160,7 +160,7 @@ def read_message(stdscr, conversation):
         old_backlog = len(backlog)
         for line in tail:
             if line:
-                backlog.append(line)
+                backlog.append(line.replace("\r", ""))
             else:
                 break
         if old_backlog != len(backlog):
