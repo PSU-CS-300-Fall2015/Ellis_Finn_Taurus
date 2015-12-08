@@ -34,7 +34,7 @@ def ship_tnm(tnu, tnm):
     """
     user_string = "{user} ({host}:{port})".format(user=tnu.name, host=tnu.host, port=str(tnu.port))
     sender = socket.socket()
-    sender.settimeout(3)
+    sender.settimeout(1)
     try:
         sender.connect((tnu.host, tnu.port))
         sender.send(tnm.ciphertext)
