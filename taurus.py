@@ -42,10 +42,13 @@ def ship_tnm(tnu, tnm):
     except (socket.error, socket.timeout) as e:
         print("Unable to reach {user}: {reason}".format(user=user_string, reason=str(e)))
         logger.error("Failed to send a message to {user}: {reason}".format(user=user_string, reason=str(e)))
+        sender.close()
+        return False
     else:
         logger.info("Sent a message to {user}.".format(user=user_string))
         filesystem.write_message(tnu.name, tnm)
-    sender.close()
+        sender.close()
+        return True
 
 def send_message(stdscr):
     """
