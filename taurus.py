@@ -99,10 +99,14 @@ def update_status(stdscr):
     Update the online status of the users in the table.
     """
     safe_put(stdscr, "Checking node status, please wait ...", (2, 1))
-    for user in taunet.users.all():
-        safe_put(stdscr, user.name.ljust(30), (2, 39))
-        stdscr.refresh()
+    users = taunet.users.all()
+    i = 0
+    j = len(users)
+    for user in users:
+        i += 1
+        safe_put(stdscr, "({i}/{j}) {name}".format(i=i, j=j, name=user.name.ljust(30)), (2, 39))
         is_online(user)
+        stdscr.refresh()
     stdscr.clear()
     stdscr.refresh()
 
@@ -199,7 +203,7 @@ def menu(stdscr):
     options["v"] = ("(V)iew user list", view_users)
     options["r"] = ("(R)ead messages", list_messages)
     options["s"] = ("(S)end a new message", send_message)
-    options["u"] = ("(U)pdate online status (may take a minute)", update_status)
+    options["u"] = ("(U)pdate node status (slow!)", update_status)
     while True:
         # Don't show the cursor or echo output.
         # These are inside the loop so menu items can unset them.
@@ -207,7 +211,7 @@ def menu(stdscr):
         curses.noecho()
         row = 4
         column = 5
-        for o in options:
+        for o in sorted(options):
             safe_put(stdscr, options[o][0], (row, column))
             row += 1
         safe_put(stdscr, "(Q)uit Taurus", (row+1, column))
