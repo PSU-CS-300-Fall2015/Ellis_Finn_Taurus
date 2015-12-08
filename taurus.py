@@ -39,7 +39,8 @@ def ship_tnm(tnu, tnm):
         sender.send(tnm.ciphertext)
         sender.shutdown(socket.SHUT_RDWR)
     except (socket.error, socket.timeout) as e:
-        print("Unable to reach {user}: {reason}".format(user=user_string, reason=str(e)))
+        # Commented out to save it for the message queue later.
+        # print("Unable to reach {user}: {reason}".format(user=user_string, reason=str(e)))
         logger.error("Failed to send a message to {user}: {reason}".format(user=user_string, reason=str(e)))
         sender.close()
         return False
@@ -75,7 +76,7 @@ def send_message(stdscr):
         print("No such user. Known users: " + ", ".join(sorted([u.name for u in taunet.users.all()])))
         return
     if not is_online(tnu):
-        # The error message is printed in ship_tnm.
+        print("Couldn't connect to that user's host.")
         return
     safe_put(stdscr, "Message:", (0, 0))
     message = stdscr.getstr(0, 9)
