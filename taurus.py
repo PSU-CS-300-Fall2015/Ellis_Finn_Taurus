@@ -50,6 +50,14 @@ def ship_tnm(tnu, tnm):
         sender.close()
         return True
 
+def is_online(tnu):
+    """
+    Attempt to send an empty message, to see if a TauNet node is online.
+    """
+    if ship_tnm(tnu, taunet.TauNetMessage().outgoing(tnu.name, "")):
+        return True
+    return False
+
 def send_message(stdscr):
     """
     Prompt for a user and message, generate a TauNetMessage, and send it.
@@ -64,6 +72,9 @@ def send_message(stdscr):
     tnu = taunet.users.by_name(username)
     if tnu == None:
         print("No such user. Known users: " + ", ".join(sorted([u.name for u in taunet.users.all()])))
+        return
+    if not is_online(tnu):
+        # The error message is printed in ship_tnm.
         return
     safe_put(stdscr, "Message:", (1, 0))
     message = stdscr.getstr(1, 9)
