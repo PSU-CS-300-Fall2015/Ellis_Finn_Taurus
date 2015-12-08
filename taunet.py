@@ -53,6 +53,14 @@ class TauNetMessage(object):
         self.recipient = None
         self.message = None
 
+    def test(self, recipient):
+        """
+        Create a test message which is totally empty (no headers, no payload).
+        Used for testing node status.
+        """
+        self.ciphertext = ""
+        return self
+
     def incoming(self, ciphertext):
         """
         Read in received ciphertext and populate the TauNetMessage with its
