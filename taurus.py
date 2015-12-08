@@ -8,7 +8,6 @@ Copyright (c) 2015 Finn Ellis, licensed under the MIT License.
 import socket
 import sys
 import curses
-import time
 
 import taunet
 import filesystem
