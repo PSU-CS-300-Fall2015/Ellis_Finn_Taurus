@@ -7,6 +7,8 @@ Copyright (c) 2015 Finn Ellis, licensed under the MIT License.
 
 import socket
 import sys
+import curses
+import time
 
 import taunet
 import filesystem
@@ -15,8 +17,38 @@ import filesystem
 # Set up logger.
 logger=filesystem.get_logger("taurus")
 
+def safe_put(stdscr, string, loc):
+    """
+    Print to the given location. This is a workaround because curses won't
+    print properly to the bottom-right location.
+    """
+    if loc[0] == curses.LINES-1 and loc[1] == curses.COLS-1:
+        stdscr.addstr(loc[0], loc[1]-1, string.encode("utf-8"))
+        stdscr.insstr(loc[0], loc[1]-1, " ")
+    else:
+        stdscr.addstr(loc[0], loc[1], string.encode("utf-8"))
 
-def send_message(tnu, message):
+def send_message(stdscr):
+    """
+    Prompt for a user and message, generate a TauNetMessage, and send it.
+    """
+    # Echo input while typing things.
+    curses.echo()
+
+    stdscr.clear()
+    stdscr.refresh()
+    safe_put(stdscr, "Recipient username: ", (0, 0))
+    username = stdscr.getstr(0, 20)
+    tnu = taunet.users.by_name(username)
+    if tnu == None:
+        print("No such user. Known users: " + ", ".join(sorted([u.name for u in taunet.users.all()])))
+        curses.noecho()
+        return
+
+    safe_put(stdscr, "Message:", (1, 0))
+    message = stdscr.getstr(1, 9)
+    curses.noecho()
+
     tnm = taunet.TauNetMessage().outgoing(tnu.name, message)
     user_string = "{user} ({host}:{port})".format(user=tnu.name, host=tnu.host, port=str(tnu.port))
     sender = socket.socket()
@@ -33,12 +65,23 @@ def send_message(tnu, message):
     sender.shutdown(socket.SHUT_RDWR)
     sender.close()
 
+def menu(stdscr):
+    """
+    Display the menu of basic commands and execute the requested one.
+    """
+    # Don't show the cursor.
+    curses.curs_set(0)
+    while True:
+        safe_put(stdscr, "(S)end a new message", (5, 5))
+        safe_put(stdscr, "(Q)uit Taurus", (6, 5))
+        stdscr.refresh()
+
+        c = stdscr.getch()
+        if c == ord("q"):
+            break
+        if c == ord("s"):
+            send_message(stdscr)
+
 
 if __name__ == "__main__":
-    username = raw_input("Recipient username: ")
-    tnu = taunet.users.by_name(username)
-    if tnu == None:
-        print("No such user. Known users: " + ", ".join(sorted([u.name for u in taunet.users.all()])))
-        sys.exit(1)
-    message = raw_input("Message: ")
-    send_message(tnu, message)
+    curses.wrapper(menu)
