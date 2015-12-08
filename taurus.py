@@ -84,6 +84,28 @@ def send_message(stdscr):
     stdscr.refresh()
     ship_tnm(tnu, taunet.TauNetMessage().outgoing(tnu.name, message))
 
+def view_users(stdscr):
+    """
+    View the list of users and their status.
+    """
+    stdscr.clear()
+    safe_put(stdscr, "Checking node status, please wait ...", (2, 1))
+    stdscr.refresh()
+    users_by_status = [(is_online(u), u) for u in sorted(taunet.users.all(), key=lambda u: u.name)]
+    safe_put(stdscr, "(* denotes a user available for messaging. Hit any key to return to the menu.)", (2, 1))
+    row = 4
+    column = 1
+    for user in sorted(taunet.users.all()):
+        if is_online(user):
+            safe_put(stdscr, "*", (row, column))
+        safe_put(stdscr, user.name, (row, column+2))
+        row += 1
+
+    # Wait for any key, then clear and return to menu.
+    stdscr.getch()
+    stdscr.clear()
+    stdscr.refresh()
+
 def menu(stdscr):
     """
     Display the menu of basic commands and execute the requested one.
@@ -93,6 +115,7 @@ def menu(stdscr):
         # These are inside the loop so menu items can unset them.
         curses.curs_set(0)
         curses.noecho()
+        safe_put(stdscr, "(V)iew user list", (4, 5))
         safe_put(stdscr, "(S)end a new message", (5, 5))
         safe_put(stdscr, "(Q)uit Taurus", (6, 5))
         stdscr.refresh()
@@ -100,7 +123,9 @@ def menu(stdscr):
         c = stdscr.getch()
         if c == ord("q"):
             break
-        if c == ord("s"):
+        elif c == ord("v"):
+            view_users(stdscr)
+        elif c == ord("s"):
             send_message(stdscr)
 
 
