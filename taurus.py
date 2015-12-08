@@ -170,10 +170,11 @@ def read_message(stdscr, conversation):
     """
     backlog = []
     tail = filesystem.tail_conversation(conversation)
+    old_backlog = 0
     while True:
-        # This setting is inside the loop because the reply mode disables it.
+        # These settings are inside the loop because the reply mode disables them.
         stdscr.nodelay(1)
-        old_backlog = len(backlog)
+        curses.noecho()
         for line in tail:
             if line:
                 backlog.append(line.replace("\r", ""))
@@ -181,15 +182,19 @@ def read_message(stdscr, conversation):
                 break
         if old_backlog != len(backlog):
             stdscr.erase()
-            safe_put(stdscr, "Viewing conversation with {user}. You can (r)eply or (q)uit.".format(user=conversation), (0, 0))
-            safe_put(stdscr, "\r".join(backlog[-20:]), (2, 0))
+            safe_put(stdscr, "Viewing conversation with {user}. You can (r)eply or (q)uit.".format(user=conversation), (2, 0))
+            safe_put(stdscr, "\r".join(backlog[-20:]), (4, 0))
             stdscr.refresh()
+        old_backlog = len(backlog)
+
         selection = stdscr.getch()
         if selection == ord("q"):
             break
         if selection == ord("r"):
             stdscr.nodelay(0)
             send_message(stdscr, conversation)
+            # Trigger a redraw after sending a message
+            old_backlog = 0
         time.sleep(0.1)
     stdscr.nodelay(0)
     stdscr.clear()
