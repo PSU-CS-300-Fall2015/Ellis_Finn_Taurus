@@ -68,8 +68,8 @@ def is_online(tnu):
 def send_message(stdscr, username=None):
     """
     Prompt for a user and message, generate a TauNetMessage, and send it.
-    The optional keyword argument is a TauNetUser; if this is supplied,
-    the user won't be prompted for a username.
+    The optional keyword argument is a username; if this is supplied,
+    the user won't be prompted for one.
     """
     # Show the cursor and echo output.
     curses.curs_set(1)
