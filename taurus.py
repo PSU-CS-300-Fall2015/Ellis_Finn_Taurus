@@ -169,6 +169,8 @@ def menu(stdscr):
         stdscr.refresh()
 
         c = stdscr.getch()
+        if not 0 < c < 255:
+            continue
         if chr(c) == "q":
             break
         if chr(c) in options:
