@@ -53,7 +53,7 @@ class TauNetMessage(object):
         self.recipient = None
         self.message = None
 
-    def test(self, recipient):
+    def test(self):
         """
         Create a test message which is totally empty (no headers, no payload).
         Used for testing node status.

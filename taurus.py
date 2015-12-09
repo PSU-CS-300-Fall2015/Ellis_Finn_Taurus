@@ -59,7 +59,7 @@ def is_online(tnu):
     """
     Attempt to send an empty message, to see if a TauNet node is online.
     """
-    if ship_tnm(tnu, taunet.TauNetMessage().test(tnu.name)):
+    if ship_tnm(tnu, taunet.TauNetMessage().test()):
         taunet.users.by_name(tnu.name).is_on = True
         return True
     taunet.users.by_name(tnu.name).is_on = False
