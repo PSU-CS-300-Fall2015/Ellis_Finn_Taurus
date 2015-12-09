@@ -6,6 +6,8 @@ A minimal client implementing the TauNet protocol developed by Bart Massey's PSU
 
 ## Usage
 
+Taurus, like other TauNet clients, is designed to be run under Raspbian Linux on a Raspberry Pi 2 Model B. This is the only supported environment, and it is strongly recommended. A single-user machine is ideal, both because the listening daemon isn't able to support multiple users, and because information stored on the local filesystem is not encrypted.
+
 ### Setup
 
 Create directories for Taurus to work in:
