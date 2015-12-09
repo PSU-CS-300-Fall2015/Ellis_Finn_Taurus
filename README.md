@@ -54,7 +54,7 @@ This simply lists the other users to whom you can send messages. Any that were o
 
 ## Tests
 
-`./encryption.py --test` to run internal consistency tests on the encryption functions.
+`./ciphersaber2.py --test` to run internal consistency tests on the encryption functions.
 
 `cd cs2-tests; ./test.sh` to verify their output against known data.
 
