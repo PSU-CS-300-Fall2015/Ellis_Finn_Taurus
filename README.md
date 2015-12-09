@@ -66,7 +66,7 @@ This simply lists the other users to whom you can send messages. Any that were o
 cat test_messages/tnm.txt | ./ciphersaber2.py --key password | nc localhost 6283
 ```
 
-* `long_lorem.txt` contains two lines, a username and a message, and is intended to be catted into `taurus.py`. The message is 1024 bytes long, and should automatically be truncated when sent.
+* `long_lorem.txt` contains 1025 bytes of lorem ipsum, including a trailing newline, for easy pasting into messages. (This is too long to be contained in a TauNet 0.2-compliant messages, and should be truncated by the client.)
 
 ## Logs
 
