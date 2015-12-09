@@ -1,0 +1,31 @@
+Script started on Tue 08 Dec 2015 10:45:14 PM PST
+relsqui@rook:~/taurus$ ./cir[Kphersaber2.py --test
+-- Testing stream generation. --
+Generating a 10-byte stream, 200 rounds, key 'testkey'
+Same input, same output.
+Different input, different output.
+Requested 42 bytes of stream, got 42 bytes of stream.
+-- Testing encryption. --
+Encrypting 'fish', 200 rounds, key 'testkey', IV 'badiv'
+Same input, same output.
+Random IV, different output.
+Ciphertext starts with randomly-chosen IV.
+-- Testing decryption. --
+Got 'fish' back from stream with selected IV.
+Got 'fish' back from stream with random IV.
+Didn't get 'fish' back when using the wrong key.
+-- Testing defaults. --
+Encrypt/decrypt match.
+Constants match.
+-- Testing algorithm. --
+Human-readable sample works.
+relsqui@rook:~/taurus$ cd cs2-tests/
+relsqui@rook:~/taurus/cs2-tests$ ./test.sh 
+Testing cstest1.cs1 ... OK
+Testing cstest2.cs1 ... OK
+Testing cknight.cs1 ... OK
+Testing cstest.cs2 ... OK
+Testing algorhyme.cs2 ... OK
+relsqui@rook:~/taurus/cs2-tests$ exit
+
+Script done on Tue 08 Dec 2015 10:45:25 PM PST
