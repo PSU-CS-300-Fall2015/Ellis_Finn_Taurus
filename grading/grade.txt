@@ -1,0 +1,9 @@
+Finn Ellis
+100 A
+
+Great docs. The SDD was especially well-written. Good
+tests. Nice Git history. Very fancy client, with great
+features. Use of curses is a fine choice. Good Python source
+with clear organization.
+
+Thanks huge for your help with the course. Greatly appreciated.
